@@ -6,6 +6,8 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from src.utils.logger import logger
 from src.common.exceptions import DatabaseConnectionError
+import asyncio
+import socket
 
 load_dotenv()
 
@@ -21,9 +23,16 @@ async def get_conn():
         conn = await get_engine().connect()
         logger.info("DB connection opened")
         yield conn
-    except SQLAlchemyError as e:
-        logger.exception(f"DB connection failed!")
+    # capture query, connection pool timeouts (SQLAlchemyError), 
+    # database timeouts errors (asyncio),
+    # OS level errors, including file I/O, permission issues, and low-level socket failures network related failures 
+    # like refused connections, broken pipes, or unreachable hosts(OSerror)
+    except (SQLAlchemyError, OSError, asyncio.TimeoutError) as e:
+        logger.exception("Database connection failed")
         raise DatabaseConnectionError("Database connection failed") from e
+    except Exception as e:
+        logger.exception(f"Unexpected DB error!")  
+        raise DatabaseConnectionError("Unexpected database error") from e              
     finally:
         if conn is not None:
             await conn.close()

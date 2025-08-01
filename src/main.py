@@ -5,7 +5,6 @@ from src.schema.request import CreateBook
 from src.schema.response import Book
 from src.services import book_service
 from typing import List
-from sqlalchemy.orm import Session
 from uuid import UUID
 from src.utils.logger import logger
 from src.common.exceptions import AppError
@@ -21,7 +20,7 @@ async def get_all_books():
 @app.get("/books/", response_model=List[Book])
 async def get_book_by_title(book_title: str, fuzzy_search: bool = False):
     books = await book_service.get_book_by_title(book_title, fuzzy_search)
-    
+
     if not books:
         raise HTTPException(status_code=404, detail=f"Book '{book_title}' not found")
     
