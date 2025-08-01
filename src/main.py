@@ -1,13 +1,14 @@
-from fastapi import FastAPI, Body, Depends, HTTPException
+from fastapi import FastAPI, Body, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.requests import Request
-from schema.request import CreateBook
-from schema.response import Book
-from services import book_service
+from src.schema.request import CreateBook
+from src.schema.response import Book
+from src.services import book_service
 from typing import List
 from sqlalchemy.orm import Session
 from uuid import UUID
-from utils.logger import logger
+from src.utils.logger import logger
+from src.common.exceptions import AppError
 
 app = FastAPI()
 
@@ -47,3 +48,12 @@ async def create_book(new_book: CreateBook = Body(...)):
 async def generic_handler(request: Request, exc: Exception):
     logger.exception("Unhandled exception")
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
+
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError):
+    logger.error(f"App error: {exc.message}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message}
+    )
+

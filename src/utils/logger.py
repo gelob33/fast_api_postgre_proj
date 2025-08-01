@@ -1,13 +1,19 @@
 import logging
+import sys
 
 logger = logging.getLogger("app_logger")
 logger.setLevel(logging.INFO)
 
-# You can attach more handlers here
-console_handler = logging.StreamHandler()
-console_handler.setLevel(logging.INFO)
+# Prevent adding multiple handlers if logger is imported multiple times
+if not logger.hasHandlers():
+    # Console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(logging.INFO)
 
-formatter = logging.Formatter("[%(asctime)s] %(levelname)s - %(message)s")
-console_handler.setFormatter(formatter)
+    # Formatter with exception info
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    )
+    console_handler.setFormatter(formatter)
 
-logger.addHandler(console_handler)
+    logger.addHandler(console_handler)

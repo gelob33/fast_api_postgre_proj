@@ -1,13 +1,14 @@
 import os
 from sqlalchemy import select, func, text, Text, insert
-from schema.response import Book
-from database.connection import get_conn
-from database.schema import BookTable
-from utils.result_mapper import map_row_to_model # abstract method to map rows to model (not in use)
+from src.schema.response import Book
+from src.database.connection import get_conn
+from src.database.schema import BookTable
+from src.utils.result_mapper import map_row_to_model # abstract method to map rows to model (not in use)
+from src.utils import logger
 from typing import List
 from uuid import UUID
 import uuid
-from utils import logger
+
 
 
 async def get_all_books() -> List[Book]:
@@ -72,7 +73,7 @@ async def get_book_by_title(book_title: str, fuzzy_search: bool) -> List[Book]:
             #return [map_row_to_model(row, Book) for row in rows]
             return [Book(**dict(row._mapping)) for row in rows]            
         except Exception as e:
-            raise from e
+            raise
 
 
 async def create_book(book_data: dict) -> Book:
