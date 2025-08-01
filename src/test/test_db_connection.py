@@ -1,8 +1,20 @@
 import pytest
 from unittest.mock import AsyncMock, patch
+from sqlalchemy import text
 from sqlalchemy.exc import ProgrammingError
 from src.database.connection import get_conn
 from src.common.exceptions import DatabaseConnectionError
+
+
+# test the database
+@pytest.mark.asyncio
+async def test_get_select_db():
+    async with get_conn() as conn:
+        result = await conn.execute(text("SELECT NOW()"))
+        value = result.scalar()
+        assert value is not None
+
+
 
 @pytest.mark.asyncio
 async def test_get_conn_unexpected_exception():
