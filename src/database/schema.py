@@ -11,7 +11,7 @@ from sqlalchemy.dialects.postgresql import UUID
 metadata = MetaData()
 
 BookTable = Table(
-    "books",
+    "book",
     metadata, # add table to sqlalchemy metadata collection
     Column("id", UUID(as_uuid=True), primary_key=True),
     Column("title", String, nullable=False),
