@@ -1,0 +1,6 @@
+.venv/
+.env
+scripts.sql
+__pycache__
+books.py
+BOOKS_DATA.JSON
