@@ -27,7 +27,10 @@ async def get_conn():
     # database timeouts errors (asyncio),
     # OS level errors, including file I/O, permission issues, and low-level socket failures network related failures 
     # like refused connections, broken pipes, or unreachable hosts(OSerror)
-    except (SQLAlchemyError, OSError, asyncio.TimeoutError) as e:
+    except SQLAlchemyError as e:
+        logger.exception("Invalid SQL syntax")
+        raise DatabaseConnectionError("Invalid SQL Syntax!") from e    
+    except (OSError, asyncio.TimeoutError) as e:
         logger.exception("Database connection failed")
         raise DatabaseConnectionError("Database connection failed") from e
     except Exception as e:
