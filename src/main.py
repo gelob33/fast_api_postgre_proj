@@ -37,10 +37,20 @@ async def get_book_by_id(book_id: UUID):
     return books
 
 
-@app.post("/books/create_book", response_model=Book)
+@app.post("/books", response_model=Book)
 async def create_book(new_book: CreateBook = Body(...)):
     book = await book_service.create_book(new_book.model_dump())
     return book
+
+# @app.patch("/books", response_model=Book)
+# async def update_book(new_book: CreateBook = Body(...)):
+#     book = await book_service.create_book(new_book.model_dump())
+#     return book
+
+# @app.delete("/books", response_model=Book)
+# async def update_book(new_book: CreateBook = Body(...)):
+#     book = await book_service.create_book(new_book.model_dump())
+#     return book
 
 
 @app.exception_handler(Exception)
