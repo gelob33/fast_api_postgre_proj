@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, insert
+from sqlalchemy import select, func, insert, text
 from src.database.connection import get_conn
 from src.database.schema import BookTable
 from src.schema.response import Book
@@ -65,6 +65,19 @@ class BookRepository:
             row = (await conn.execute(stmt)).fetchone()
             await trans.commit()      
             return map_row_to_book(row)
+
+    async def find_by_title_author(self, book_title: str, book_author: str) -> List[Book]:
+        async with get_conn() as conn:
+            stmt = text("""SELECT bk.* 
+                             FROM play_pen.book bk
+                            WHERE bk.title = :book_title
+                              AND bk.author = :book_author
+                            ORDER BY bk.title, bk.author
+                        """)
+            
+            result = await conn.execute(stmt, {"book_title": book_title, "book_author":book_author})
+            return [map_row_to_book(row) for row in result.fetchall()]
+
 
 # instantiate 
 book_repo = BookRepository()

@@ -21,3 +21,9 @@ class BookNotFoundError(AppError):
         elif title:
             msg += f" with title '{title}'."
         super().__init__(msg, status_code=404)
+
+
+class DuplicateBookError(AppError):
+    def __init__(self, title=None, author=None):
+        msg = f"Book already exists. Title: '{title}'; Author: '{author}'."
+        super().__init__(msg, status_code=409)
